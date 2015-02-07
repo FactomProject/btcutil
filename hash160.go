@@ -9,7 +9,7 @@ import (
 
 	"golang.org/x/crypto/ripemd160"
 
-	"github.com/btcsuite/fastsha256"
+	"github.com/FactomProject/fastsha256"
 )
 
 // Calculate the hash of hasher over buf.
