@@ -5,7 +5,7 @@
 package bloom
 
 import (
-	"github.com/FactomProject/btcd/blockchain"
+	//	"github.com/FactomProject/btcd/blockchain"
 	"github.com/FactomProject/btcd/wire"
 	"github.com/FactomProject/btcutil"
 )
@@ -29,18 +29,20 @@ func (m *merkleBlock) calcTreeWidth(height uint32) uint32 {
 // calcHash returns the hash for a sub-tree given a depth-first height and
 // node position.
 func (m *merkleBlock) calcHash(height, pos uint32) *wire.ShaHash {
-	if height == 0 {
-		return m.allHashes[pos]
-	}
+	//	if height == 0 {
+	return m.allHashes[pos]
+	//	}
 
-	var right *wire.ShaHash
-	left := m.calcHash(height-1, pos*2)
-	if pos*2+1 < m.calcTreeWidth(height-1) {
-		right = m.calcHash(height-1, pos*2+1)
-	} else {
-		right = left
-	}
-	return blockchain.HashMerkleBranches(left, right)
+	/*
+		var right *wire.ShaHash
+		left := m.calcHash(height-1, pos*2)
+		if pos*2+1 < m.calcTreeWidth(height-1) {
+			right = m.calcHash(height-1, pos*2+1)
+		} else {
+			right = left
+		}
+		return blockchain.HashMerkleBranches(left, right)
+	*/
 }
 
 // traverseAndBuild builds a partial merkle tree using a recursive depth-first
