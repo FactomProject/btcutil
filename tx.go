@@ -6,8 +6,10 @@ package btcutil
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 
+	"github.com/FactomProject/FactomCode/util"
 	"github.com/FactomProject/btcd/wire"
 )
 
@@ -24,6 +26,8 @@ type Tx struct {
 	msgTx   *wire.MsgTx   // Underlying MsgTx
 	txSha   *wire.ShaHash // Cached transaction hash
 	txIndex int           // Position within a block or TxIndexUnknown
+
+	factomObject *interface{}
 }
 
 // MsgTx returns the underlying wire.MsgTx for the transaction.
@@ -41,13 +45,26 @@ func (t *Tx) Sha() *wire.ShaHash {
 		return t.txSha
 	}
 
-	// Generate the transaction hash.  Ignore the error since TxSha can't
-	// currently fail.
-	sha, _ := t.msgTx.TxSha()
+	if nil != t.factomObject {
+		if nil != t.msgTx {
+			util.Trace("BAD ERROR msgTx & factomObject are both not NULL !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+		}
 
-	// Cache the hash and return it.
-	t.txSha = &sha
-	return &sha
+		sha_p, _ := wire.NewShaHashFromStruct(t.factomObject)
+		t.txSha = sha_p
+
+	} else {
+		// Generate the transaction hash.  Ignore the error since TxSha can't
+		// currently fail.
+		sha, _ := t.msgTx.TxSha()
+
+		// Cache the hash and return it.
+		t.txSha = &sha
+	}
+
+	fmt.Printf("btcutil.Sha(): the hash= %v\n", t.txSha)
+
+	return t.txSha
 }
 
 // Index returns the saved index of the transaction within a block.  This value
