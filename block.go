@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/FactomProject/FactomCode/util"
 	"github.com/FactomProject/btcd/wire"
 )
 
@@ -237,6 +238,7 @@ func NewBlockFromReader(r io.Reader) (*Block, error) {
 // NewBlockFromBlockAndBytes returns a new instance of a bitcoin block given
 // an underlying wire.MsgBlock and the serialized bytes for it.  See Block.
 func NewBlockFromBlockAndBytes(msgBlock *wire.MsgBlock, serializedBlock []byte) *Block {
+	util.Trace()
 	return &Block{
 		msgBlock:        msgBlock,
 		serializedBlock: serializedBlock,
