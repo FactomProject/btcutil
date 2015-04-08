@@ -11,6 +11,8 @@ import (
 
 	"github.com/FactomProject/FactomCode/util"
 	"github.com/FactomProject/btcd/wire"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 // OutOfRangeError describes an error due to accessing an element that is out
@@ -172,10 +174,14 @@ func (b *Block) TxSha(txNum int) (*wire.ShaHash, error) {
 // It is used to allow fast indexing into transactions within the raw byte
 // stream.
 func (b *Block) TxLoc() ([]wire.TxLoc, error) {
+	util.Trace()
+	fmt.Println("TxLoc= ", spew.Sdump(b))
+
 	rawMsg, err := b.Bytes()
 	if err != nil {
 		return nil, err
 	}
+	util.Trace()
 	rbuf := bytes.NewBuffer(rawMsg)
 
 	var mblock wire.MsgBlock
@@ -183,6 +189,7 @@ func (b *Block) TxLoc() ([]wire.TxLoc, error) {
 	if err != nil {
 		return nil, err
 	}
+	util.Trace()
 	return txLocs, err
 }
 
