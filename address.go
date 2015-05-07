@@ -13,6 +13,8 @@ import (
 	"github.com/FactomProject/btcd/btcec"
 	"github.com/FactomProject/btcd/chaincfg"
 	"github.com/FactomProject/btcutil/base58"
+
+	"github.com/FactomProject/FactomCode/util"
 )
 
 var (
@@ -82,6 +84,8 @@ type Address interface {
 // When the address does not encode the network, such as in the case of a raw
 // public key, the address will be associated with the passed defaultNet.
 func DecodeAddress(addr string, defaultNet *chaincfg.Params) (Address, error) {
+	util.Trace("DecodeAddress(" + addr + ")")
+
 	// Serialized public keys are either 65 bytes (130 hex chars) if
 	// uncompressed/hybrid or 33 bytes (66 hex chars) if compressed.
 	if len(addr) == 130 || len(addr) == 66 {
@@ -107,8 +111,10 @@ func DecodeAddress(addr string, defaultNet *chaincfg.Params) (Address, error) {
 		switch hash160 := decoded; {
 		case isP2PKH && isP2SH:
 			return nil, ErrAddressCollision
-		case isP2PKH:
-			return newAddressPubKeyHash(hash160, netID)
+			/*
+				case isP2PKH:
+					return newAddressPubKeyHash(hash160, netID)
+			*/
 		case isP2SH:
 			return newAddressScriptHashFromHash(hash160, netID)
 		default:
@@ -127,6 +133,7 @@ type AddressPubKeyHash struct {
 	netID byte
 }
 
+/*
 // NewAddressPubKeyHash returns a new AddressPubKeyHash.  pkHash mustbe 20
 // bytes.
 func NewAddressPubKeyHash(pkHash []byte, net *chaincfg.Params) (*AddressPubKeyHash, error) {
@@ -148,10 +155,12 @@ func newAddressPubKeyHash(pkHash []byte, netID byte) (*AddressPubKeyHash, error)
 	copy(addr.hash[:], pkHash)
 	return addr, nil
 }
+*/
 
 // EncodeAddress returns the string encoding of a pay-to-pubkey-hash
 // address.  Part of the Address interface.
 func (a *AddressPubKeyHash) EncodeAddress() string {
+	util.Trace("AddressPubKeyHash")
 	return encodeAddress(a.hash[:], a.netID)
 }
 
@@ -219,6 +228,7 @@ func newAddressScriptHashFromHash(scriptHash []byte, netID byte) (*AddressScript
 // EncodeAddress returns the string encoding of a pay-to-script-hash
 // address.  Part of the Address interface.
 func (a *AddressScriptHash) EncodeAddress() string {
+	util.Trace("AddressScriptHash")
 	return encodeAddress(a.hash[:], a.netID)
 }
 
@@ -326,6 +336,8 @@ func (a *AddressPubKey) serialize() []byte {
 //
 // Part of the Address interface.
 func (a *AddressPubKey) EncodeAddress() string {
+	util.Trace("AddressPubKey")
+
 	return encodeAddress(Hash160(a.serialize()), a.pubKeyHashID)
 }
 
