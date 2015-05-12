@@ -7,6 +7,7 @@ package btcutil
 import (
 	"encoding/hex"
 	"errors"
+	"fmt"
 
 	"golang.org/x/crypto/ripemd160"
 
@@ -41,10 +42,21 @@ var (
 // and netID which encodes the bitcoin network and address type.  It is used
 // in both pay-to-pubkey-hash (P2PKH) and pay-to-script-hash (P2SH) address
 // encoding.
-func encodeAddress(hash160 []byte, netID byte) string {
+// func encodeAddress(hash160 []byte, netID byte) string {
+func encodeAddress(hash []byte, netID byte) string {
 	// Format is 1 byte for a network and address class (i.e. P2PKH vs
 	// P2SH), 20 bytes for a RIPEMD160 hash, and 4 bytes of checksum.
-	return base58.CheckEncode(hash160[:ripemd160.Size], netID)
+	//	return base58.CheckEncode(hash160[:ripemd160.Size], netID)
+	//	return base58.CheckEncode(hash[:ripemd160.Size], netID)
+	//	return base58.CheckEncode(hash[:ripemd160.Size])
+	return base58.CheckEncode(hash[:])
+}
+
+func EncodeAddr(hash []byte) string {
+	// Format is 1 byte for a network and address class (i.e. P2PKH vs
+	// P2SH), 20 bytes for a RIPEMD160 hash, and 4 bytes of checksum.
+	//	return base58.CheckEncode(hash160[:ripemd160.Size], netID)
+	return base58.CheckEncode(hash[:])
 }
 
 // Address is an interface type for any type of destination a transaction
@@ -83,47 +95,63 @@ type Address interface {
 // The bitcoin network the address is associated with is extracted if possible.
 // When the address does not encode the network, such as in the case of a raw
 // public key, the address will be associated with the passed defaultNet.
-func DecodeAddress(addr string, defaultNet *chaincfg.Params) (Address, error) {
+// func DecodeAddress(addr string, defaultNet *chaincfg.Params) (Address, error) {
+func DecodeAddress(addr string) (Address, error) {
 	util.Trace("DecodeAddress(" + addr + ")")
+
+	fmt.Println("len= ", len(addr))
 
 	// Serialized public keys are either 65 bytes (130 hex chars) if
 	// uncompressed/hybrid or 33 bytes (66 hex chars) if compressed.
-	if len(addr) == 130 || len(addr) == 66 {
+	//	if len(addr) == 130 || len(addr) == 66 {
+	if 52 == len(addr) {
 		serializedPubKey, err := hex.DecodeString(addr)
 		if err != nil {
+			util.Trace()
 			return nil, err
 		}
-		return NewAddressPubKey(serializedPubKey, defaultNet)
+		util.Trace()
+		return NewAddressPubKey(serializedPubKey, &chaincfg.MainNetParams)
 	}
 
+	return nil, errors.New("decoded address is of unknown format")
+
+	panic(12300)
+
+	util.Trace()
+
 	// Switch on decoded length to determine the type.
-	decoded, netID, err := base58.CheckDecode(addr)
+	//	decoded, netID, err := base58.CheckDecode(addr)
+	_, _, _, err := base58.CheckDecode(addr)
 	if err != nil {
 		if err == base58.ErrChecksum {
 			return nil, ErrChecksumMismatch
 		}
 		return nil, errors.New("decoded address is of unknown format")
 	}
-	switch len(decoded) {
-	case ripemd160.Size: // P2PKH or P2SH
-		isP2PKH := chaincfg.IsPubKeyHashAddrID(netID)
-		isP2SH := chaincfg.IsScriptHashAddrID(netID)
-		switch hash160 := decoded; {
-		case isP2PKH && isP2SH:
-			return nil, ErrAddressCollision
-			/*
-				case isP2PKH:
-					return newAddressPubKeyHash(hash160, netID)
-			*/
-		case isP2SH:
-			return newAddressScriptHashFromHash(hash160, netID)
-		default:
-			return nil, ErrUnknownAddressType
-		}
 
-	default:
-		return nil, errors.New("decoded address is of unknown size")
-	}
+	/*
+		switch len(decoded) {
+		case ripemd160.Size: // P2PKH or P2SH
+			isP2PKH := chaincfg.IsPubKeyHashAddrID(netID)
+			isP2SH := chaincfg.IsScriptHashAddrID(netID)
+			switch hash160 := decoded; {
+			case isP2PKH && isP2SH:
+				return nil, ErrAddressCollision
+							case isP2PKH:
+								return newAddressPubKeyHash(hash160, netID)
+					case isP2SH:
+						return newAddressScriptHashFromHash(hash160, netID)
+			default:
+				return nil, ErrUnknownAddressType
+			}
+
+		default:
+			return nil, errors.New("decoded address is of unknown size")
+		}
+	*/
+
+	panic(2222)
 }
 
 // AddressPubKeyHash is an Address for a pay-to-pubkey-hash (P2PKH)
@@ -176,12 +204,14 @@ func (a *AddressPubKeyHash) IsForNet(net *chaincfg.Params) bool {
 	return a.netID == net.PubKeyHashAddrID
 }
 
+/*
 // String returns a human-readable string for the pay-to-pubkey-hash address.
 // This is equivalent to calling EncodeAddress, but is provided so the type can
 // be used as a fmt.Stringer.
 func (a *AddressPubKeyHash) String() string {
 	return a.EncodeAddress()
 }
+*/
 
 // Hash160 returns the underlying array of the pubkey hash.  This can be useful
 // when an array is more appropiate than a slice (for example, when used as map
@@ -313,6 +343,8 @@ func NewAddressPubKey(serializedPubKey []byte, net *chaincfg.Params) (*AddressPu
 // serialize returns the serialization of the public key according to the
 // format associated with the address.
 func (a *AddressPubKey) serialize() []byte {
+	util.Trace()
+
 	switch a.pubKeyFormat {
 	default:
 		fallthrough
@@ -338,13 +370,15 @@ func (a *AddressPubKey) serialize() []byte {
 func (a *AddressPubKey) EncodeAddress() string {
 	util.Trace("AddressPubKey")
 
-	return encodeAddress(Hash160(a.serialize()), a.pubKeyHashID)
+	//	return encodeAddress(Hash160(a.serialize()), a.pubKeyHashID)
+	return encodeAddress(a.serialize(), a.pubKeyHashID)
 }
 
 // ScriptAddress returns the bytes to be included in a txout script to pay
 // to a public key.  Setting the public key format will affect the output of
 // this function accordingly.  Part of the Address interface.
 func (a *AddressPubKey) ScriptAddress() []byte {
+	util.Trace()
 	return a.serialize()
 }
 

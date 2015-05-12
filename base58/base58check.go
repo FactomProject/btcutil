@@ -25,15 +25,24 @@ func checksum(input []byte) (cksum [4]byte) {
 }
 
 // CheckEncode prepends a version byte and appends a four byte checksum.
-func CheckEncode(input []byte, version byte) string {
-	b := make([]byte, 0, 1+len(input)+4)
-	b = append(b, version)
+// func CheckEncode(input []byte, version byte) string {
+func CheckEncode(input []byte) string {
+	var b1, b2 byte
+
+	b1 = 0x5F
+	b2 = 0xB1
+
+	b := make([]byte, 0, 2+len(input)+4)
+	b = append(b, b1)
+	b = append(b, b2)
 	b = append(b, input[:]...)
 	cksum := checksum(b)
+
 	b = append(b, cksum[:]...)
 	return Encode(b)
 }
 
+/*
 // CheckDecode decodes a string that was encoded with CheckEncode and verifies the checksum.
 func CheckDecode(input string) (result []byte, version byte, err error) {
 	decoded := Decode(input)
@@ -47,6 +56,27 @@ func CheckDecode(input string) (result []byte, version byte, err error) {
 		return nil, 0, ErrChecksum
 	}
 	payload := decoded[1 : len(decoded)-4]
+	result = append(result, payload...)
+	return
+}
+*/
+
+// CheckDecode decodes a string that was encoded with CheckEncode and verifies the checksum.
+func CheckDecode(input string) (result []byte, v1 byte, v2 byte, err error) {
+	decoded := Decode(input)
+	if len(decoded) < 6 {
+		return nil, 0, 0, ErrInvalidFormat
+	}
+
+	v1 = decoded[0]
+	v2 = decoded[1]
+
+	var cksum [4]byte
+	copy(cksum[:], decoded[len(decoded)-4:])
+	if checksum(decoded[:len(decoded)-4]) != cksum {
+		return nil, 0, 0, ErrChecksum
+	}
+	payload := decoded[2 : len(decoded)-4]
 	result = append(result, payload...)
 	return
 }
