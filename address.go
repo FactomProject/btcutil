@@ -16,6 +16,7 @@ import (
 	"github.com/FactomProject/btcutil/base58"
 
 	"github.com/FactomProject/FactomCode/util"
+	"github.com/davecgh/go-spew/spew"
 )
 
 var (
@@ -38,6 +39,7 @@ var (
 	ErrAddressCollision = errors.New("address collision")
 )
 
+/*
 // encodeAddress returns a human-readable payment address given a ripemd160 hash
 // and netID which encodes the bitcoin network and address type.  It is used
 // in both pay-to-pubkey-hash (P2PKH) and pay-to-script-hash (P2SH) address
@@ -51,12 +53,17 @@ func encodeAddress(hash []byte, netID byte) string {
 	//	return base58.CheckEncode(hash[:ripemd160.Size])
 	return base58.CheckEncode(hash[:])
 }
+*/
 
 func EncodeAddr(hash []byte) string {
 	// Format is 1 byte for a network and address class (i.e. P2PKH vs
 	// P2SH), 20 bytes for a RIPEMD160 hash, and 4 bytes of checksum.
 	//	return base58.CheckEncode(hash160[:ripemd160.Size], netID)
-	return base58.CheckEncode(hash[:])
+	human_addr := base58.CheckEncode(hash[:])
+
+	util.Trace("EncodeAddr()= " + human_addr)
+
+	return human_addr
 }
 
 // Address is an interface type for any type of destination a transaction
@@ -99,36 +106,47 @@ type Address interface {
 func DecodeAddress(addr string) (Address, error) {
 	util.Trace("DecodeAddress(" + addr + ")")
 
-	fmt.Println("len= ", len(addr))
+	util.Trace(fmt.Sprintf("len= %d", len(addr)))
 
-	// Serialized public keys are either 65 bytes (130 hex chars) if
-	// uncompressed/hybrid or 33 bytes (66 hex chars) if compressed.
-	//	if len(addr) == 130 || len(addr) == 66 {
-	if 52 == len(addr) {
-		serializedPubKey, err := hex.DecodeString(addr)
-		if err != nil {
+	/*
+		// Serialized public keys are either 65 bytes (130 hex chars) if
+		// uncompressed/hybrid or 33 bytes (66 hex chars) if compressed.
+		//	if len(addr) == 130 || len(addr) == 66 {
+		if 52 == len(addr) {
+			serializedPubKey, err := hex.DecodeString(addr)
+
+			if err != nil {
+				util.Trace(fmt.Sprintf("ERROR: %v", err))
+				return nil, err
+			}
 			util.Trace()
-			return nil, err
+			return NewAddressPubKey(serializedPubKey, &chaincfg.MainNetParams)
 		}
-		util.Trace()
-		return NewAddressPubKey(serializedPubKey, &chaincfg.MainNetParams)
+
+		return nil, errors.New("decoded address is of unknown format")
+
+		panic(12300)
+	*/
+
+	if 52 != len(addr) {
+		panic(errors.New("Factoid address not 52 characters long!"))
 	}
-
-	return nil, errors.New("decoded address is of unknown format")
-
-	panic(12300)
-
 	util.Trace()
 
 	// Switch on decoded length to determine the type.
 	//	decoded, netID, err := base58.CheckDecode(addr)
-	_, _, _, err := base58.CheckDecode(addr)
+	decoded, _, _, err := base58.CheckDecode(addr)
 	if err != nil {
 		if err == base58.ErrChecksum {
 			return nil, ErrChecksumMismatch
 		}
+		fmt.Println(err)
 		return nil, errors.New("decoded address is of unknown format")
 	}
+
+	fmt.Println(spew.Sdump(decoded))
+
+	return NewAddressPubKey(decoded, &chaincfg.MainNetParams)
 
 	/*
 		switch len(decoded) {
@@ -189,12 +207,14 @@ func newAddressPubKeyHash(pkHash []byte, netID byte) (*AddressPubKeyHash, error)
 // address.  Part of the Address interface.
 func (a *AddressPubKeyHash) EncodeAddress() string {
 	util.Trace("AddressPubKeyHash")
-	return encodeAddress(a.hash[:], a.netID)
+	panic(1201)
+	//	return encodeAddress(a.hash[:], a.netID)
 }
 
 // ScriptAddress returns the bytes to be included in a txout script to pay
 // to a pubkey hash.  Part of the Address interface.
 func (a *AddressPubKeyHash) ScriptAddress() []byte {
+	util.Trace()
 	return a.hash[:]
 }
 
@@ -259,12 +279,14 @@ func newAddressScriptHashFromHash(scriptHash []byte, netID byte) (*AddressScript
 // address.  Part of the Address interface.
 func (a *AddressScriptHash) EncodeAddress() string {
 	util.Trace("AddressScriptHash")
-	return encodeAddress(a.hash[:], a.netID)
+	panic(1202)
+	//	return encodeAddress(a.hash[:], a.netID)
 }
 
 // ScriptAddress returns the bytes to be included in a txout script to pay
 // to a script hash.  Part of the Address interface.
 func (a *AddressScriptHash) ScriptAddress() []byte {
+	util.Trace()
 	return a.hash[:]
 }
 
@@ -316,6 +338,8 @@ type AddressPubKey struct {
 // address.  The serializedPubKey parameter must be a valid pubkey and can be
 // uncompressed, compressed, or hybrid.
 func NewAddressPubKey(serializedPubKey []byte, net *chaincfg.Params) (*AddressPubKey, error) {
+	util.Trace(spew.Sdump(serializedPubKey))
+
 	pubKey, err := btcec.ParsePubKey(serializedPubKey, btcec.S256())
 	if err != nil {
 		return nil, err
@@ -371,7 +395,8 @@ func (a *AddressPubKey) EncodeAddress() string {
 	util.Trace("AddressPubKey")
 
 	//	return encodeAddress(Hash160(a.serialize()), a.pubKeyHashID)
-	return encodeAddress(a.serialize(), a.pubKeyHashID)
+	//	return encodeAddress(a.serialize(), a.pubKeyHashID)
+	return EncodeAddr(a.serialize())
 }
 
 // ScriptAddress returns the bytes to be included in a txout script to pay

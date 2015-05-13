@@ -34,7 +34,12 @@ func TestTheBasics(t *testing.T) {
 
 	t.Logf(address_string)
 	//	decoded, err := btcutil.DecodeAddress(address_string)
-	decoded, _ := btcutil.DecodeAddress(address_string)
+	decoded, err := btcutil.DecodeAddress(address_string)
+
+	if nil != err {
+		t.Errorf("decoding failed: %v", err)
+		return
+	}
 
 	script := decoded.ScriptAddress() // FIXME: crashing here
 	t.Logf(spew.Sdump(script))
