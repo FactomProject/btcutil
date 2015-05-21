@@ -12,6 +12,8 @@ import (
 	"github.com/FactomProject/btcd/chaincfg"
 	"github.com/FactomProject/btcd/wire"
 	"github.com/FactomProject/btcutil/base58"
+
+	"github.com/FactomProject/FactomCode/util"
 )
 
 // ErrMalformedPrivateKey describes an error where a WIF-encoded private
@@ -162,6 +164,8 @@ func (w *WIF) SerializePubKey() []byte {
 // If the length of the source is smaller than the passed size, leading zero
 // bytes are appended to the dst slice before appending src.
 func paddedAppend(size uint, dst, src []byte) []byte {
+	util.Trace()
+
 	for i := 0; i < int(size)-len(src); i++ {
 		dst = append(dst, 0)
 	}

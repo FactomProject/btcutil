@@ -28,21 +28,30 @@ func TestTheBasics(t *testing.T) {
 
 	rcdh := wire.RCDHash{}
 
-	t.Logf(spew.Sdump(rcdh))
+	//	t.Logf(spew.Sdump(rcdh))
 
 	address_string := btcutil.EncodeAddr(rcdh[:])
 
-	t.Logf(address_string)
-	//	decoded, err := btcutil.DecodeAddress(address_string)
-	decoded, err := btcutil.DecodeAddress(address_string)
+	last_address_in_the_universe := "FA3upjWMKHmStAHR5ZgKVK4zVHPb8U74L2wzKaaSDQEonHajiLeq"
+
+	t.Logf(last_address_in_the_universe + " decoding...")
+	decoded, err := btcutil.DecodeAddress(last_address_in_the_universe)
 
 	if nil != err {
 		t.Errorf("decoding failed: %v", err)
 		return
 	}
 
-	script := decoded.ScriptAddress() // FIXME: crashing here
-	t.Logf(spew.Sdump(script))
+	t.Logf(spew.Sdump(decoded.ScriptAddress()))
+
+	t.Logf(address_string + " decoding...")
+	decoded, err = btcutil.DecodeAddress(address_string)
+	if nil != err {
+		t.Errorf("decoding failed: %v", err)
+		return
+	}
+
+	t.Logf(spew.Sdump(decoded.ScriptAddress()))
 }
 
 func testAddresses(t *testing.T) {

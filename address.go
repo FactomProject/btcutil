@@ -144,7 +144,7 @@ func DecodeAddress(addr string) (Address, error) {
 		return nil, errors.New("decoded address is of unknown format")
 	}
 
-	fmt.Println(spew.Sdump(decoded))
+	//	util.Trace("decoded= " + spew.Sdump(decoded))
 
 	return NewAddressPubKey(decoded, &chaincfg.MainNetParams)
 
@@ -331,16 +331,20 @@ const (
 type AddressPubKey struct {
 	pubKeyFormat PubKeyFormat
 	pubKey       *btcec.PublicKey
+	//	pubKey       *PublicKey
 	pubKeyHashID byte
+
+	rcdhash *utilRCDHash
 }
 
 // NewAddressPubKey returns a new AddressPubKey which represents a pay-to-pubkey
 // address.  The serializedPubKey parameter must be a valid pubkey and can be
 // uncompressed, compressed, or hybrid.
 func NewAddressPubKey(serializedPubKey []byte, net *chaincfg.Params) (*AddressPubKey, error) {
-	util.Trace(spew.Sdump(serializedPubKey))
+	util.Trace("input= " + spew.Sdump(serializedPubKey))
 
-	pubKey, err := btcec.ParsePubKey(serializedPubKey, btcec.S256())
+	//	pubKey, err := btcec.ParsePubKey(serializedPubKey, btcec.S256())
+	pubKey, err, rcdh := ParsePubKey(serializedPubKey)
 	if err != nil {
 		return nil, err
 	}
@@ -361,26 +365,33 @@ func NewAddressPubKey(serializedPubKey []byte, net *chaincfg.Params) (*AddressPu
 		pubKeyFormat: pkFormat,
 		pubKey:       pubKey,
 		pubKeyHashID: net.PubKeyHashAddrID,
+		rcdhash:      rcdh,
 	}, nil
 }
 
 // serialize returns the serialization of the public key according to the
 // format associated with the address.
 func (a *AddressPubKey) serialize() []byte {
-	util.Trace()
+	/*
+		switch a.pubKeyFormat {
+		default:
+			fallthrough
+		case PKFUncompressed:
+			return a.pubKey.SerializeUncompressed()
 
-	switch a.pubKeyFormat {
-	default:
-		fallthrough
-	case PKFUncompressed:
-		return a.pubKey.SerializeUncompressed()
+		case PKFCompressed:
+			return a.pubKey.SerializeCompressed()
 
-	case PKFCompressed:
-		return a.pubKey.SerializeCompressed()
+		case PKFHybrid:
+			return a.pubKey.SerializeHybrid()
+		}
+	*/
 
-	case PKFHybrid:
-		return a.pubKey.SerializeHybrid()
-	}
+	ret_val := make([]byte, utilRCDHashSize)
+
+	copy(ret_val, a.rcdhash[:])
+
+	return ret_val
 }
 
 // EncodeAddress returns the string encoding of the public key as a
@@ -444,6 +455,8 @@ func (a *AddressPubKey) AddressPubKeyHash() *AddressPubKeyHash {
 }
 
 // PubKey returns the underlying public key for the address.
+// func (a *AddressPubKey) PubKey() *btcec.PublicKey {
+// func (a *AddressPubKey) PubKey() *PublicKey {
 func (a *AddressPubKey) PubKey() *btcec.PublicKey {
 	return a.pubKey
 }

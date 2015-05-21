@@ -58,7 +58,7 @@ func TstAddressScriptHash(hash [ripemd160.Size]byte,
 func TstAddressPubKey(serializedPubKey []byte, pubKeyFormat PubKeyFormat,
 	netID byte) *AddressPubKey {
 
-	pubKey, _ := btcec.ParsePubKey(serializedPubKey, btcec.S256())
+	pubKey, _, _ := ParsePubKey(serializedPubKey)
 	return &AddressPubKey{
 		pubKeyFormat: pubKeyFormat,
 		pubKey:       (*btcec.PublicKey)(pubKey),
