@@ -35,7 +35,7 @@ func TestTheBasics(t *testing.T) {
 	last_address_in_the_universe := "FA3upjWMKHmStAHR5ZgKVK4zVHPb8U74L2wzKaaSDQEonHajiLeq"
 
 	t.Logf(last_address_in_the_universe + " decoding...")
-	decoded, err := btcutil.DecodeAddress(last_address_in_the_universe)
+	decoded, err := btcutil.DecodeAddress(last_address_in_the_universe, &chaincfg.MainNetParams)
 
 	if nil != err {
 		t.Errorf("decoding failed: %v", err)
@@ -45,7 +45,7 @@ func TestTheBasics(t *testing.T) {
 	t.Logf(spew.Sdump(decoded.ScriptAddress()))
 
 	t.Logf(address_string + " decoding...")
-	decoded, err = btcutil.DecodeAddress(address_string)
+	decoded, err = btcutil.DecodeAddress(address_string, &chaincfg.MainNetParams)
 	if nil != err {
 		t.Errorf("decoding failed: %v", err)
 		return
@@ -505,7 +505,7 @@ func testAddresses(t *testing.T) {
 	for _, test := range tests {
 		// Decode addr and compare error against valid.
 		//		decoded, err := btcutil.DecodeAddress(test.addr, test.net)
-		decoded, err := btcutil.DecodeAddress(test.addr)
+		decoded, err := btcutil.DecodeAddress(test.addr, &chaincfg.MainNetParams)
 		if (err == nil) != test.valid {
 			t.Errorf("%v: decoding test failed: %v", test.name, err)
 			return

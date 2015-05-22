@@ -26,7 +26,8 @@ func checksum(input []byte) (cksum [4]byte) {
 
 // CheckEncode prepends a version byte and appends a four byte checksum.
 // func CheckEncode(input []byte, version byte) string {
-func CheckEncode(input []byte) string {
+// func CheckEncode(input []byte) string {
+func CheckEncode(input []byte, version byte) string {
 	var b1, b2 byte
 
 	b1 = 0x5F

@@ -354,11 +354,9 @@ func (k *ExtendedKey) ECPrivKey() (*btcec.PrivateKey, error) {
 
 // Address converts the extended key to a standard bitcoin pay-to-pubkey-hash
 // address for the passed network.
-//func (k *ExtendedKey) Address(net *chaincfg.Params) (*btcutil.AddressPubKeyHash, error) {
-func (k *ExtendedKey) Address(net *chaincfg.Params) (*btcutil.AddressPubKey, error) {
+func (k *ExtendedKey) Address(net *chaincfg.Params) (*btcutil.AddressPubKeyHash, error) {
 	pkHash := btcutil.Hash160(k.pubKeyBytes())
-	//	return btcutil.NewAddressPubKeyHash(pkHash, net)
-	return btcutil.NewAddressPubKey(pkHash, net)
+	return btcutil.NewAddressPubKeyHash(pkHash, net)
 }
 
 // String returns the extended key as a human-readable base58-encoded string.
