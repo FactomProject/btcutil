@@ -23,6 +23,9 @@ import (
 	"github.com/FactomProject/btcd/wire"
 	"github.com/FactomProject/btcutil"
 	"github.com/FactomProject/btcutil/base58"
+
+	"github.com/FactomProject/FactomCode/util"
+	"github.com/davecgh/go-spew/spew"
 )
 
 const (
@@ -48,7 +51,8 @@ const (
 	// extended key.  It consists of 4 bytes version, 1 byte depth, 4 bytes
 	// fingerprint, 4 bytes child number, 32 bytes chain code, and 33 bytes
 	// public/private key data.
-	serializedKeyLen = 4 + 1 + 4 + 4 + 32 + 33 // 78 bytes
+	//	serializedKeyLen = 4 + 1 + 4 + 4 + 32 + 33 // 78 bytes
+	serializedKeyLen = 4 + 1 + 4 + 4 + 32 + 32 // 77 bytes
 )
 
 var (
@@ -211,7 +215,7 @@ func (k *ExtendedKey) Child(i uint32) (*ExtendedKey, error) {
 	//
 	// For normal children:
 	//   serP(parentPubKey) || ser32(i)
-	keyLen := 33
+	keyLen := 32
 	data := make([]byte, keyLen+4)
 	if isChildHardened {
 		// Case #1.
@@ -379,7 +383,7 @@ func (k *ExtendedKey) String() string {
 	serializedBytes = append(serializedBytes, childNumBytes[:]...)
 	serializedBytes = append(serializedBytes, k.chainCode...)
 	if k.isPrivate {
-		serializedBytes = append(serializedBytes, 0x00)
+		//		serializedBytes = append(serializedBytes, 0x00) // TODO: revisit, FIXME ???
 		serializedBytes = append(serializedBytes, k.key...)
 	} else {
 		serializedBytes = append(serializedBytes, k.pubKeyBytes()...)
@@ -471,10 +475,13 @@ func NewMaster(seed []byte) (*ExtendedKey, error) {
 
 // NewKeyFromString returns a new extended key instance from a base58-encoded
 // extended key.
-func NewKeyFromString(key string) (*ExtendedKey, error) {
+func NewPubKeyFromString(key string) (*ExtendedKey, error) {
 	// The base58-decoded extended key must consist of a serialized payload
 	// plus an additional 4 bytes for the checksum.
 	decoded := base58.Decode(key)
+
+	util.Trace(spew.Sdump(decoded))
+
 	if len(decoded) != serializedKeyLen+4 {
 		return nil, ErrInvalidKeyLen
 	}
@@ -497,30 +504,104 @@ func NewKeyFromString(key string) (*ExtendedKey, error) {
 	parentFP := payload[5:9]
 	childNum := binary.BigEndian.Uint32(payload[9:13])
 	chainCode := payload[13:45]
-	keyData := payload[45:78]
+	keyData := payload[45:77]
 
-	// The key data is a private key if it starts with 0x00.  Serialized
-	// compressed pubkeys either start with 0x02 or 0x03.
-	isPrivate := keyData[0] == 0x00
-	if isPrivate {
-		// Ensure the private key is valid.  It must be within the range
-		// of the order of the secp256k1 curve and not be 0.
-		keyData = keyData[1:]
-		keyNum := new(big.Int).SetBytes(keyData)
-		if keyNum.Cmp(btcec.S256().N) >= 0 || keyNum.Sign() == 0 {
-			return nil, ErrUnusableSeed
+	/*
+		// The key data is a private key if it starts with 0x00.  Serialized
+		// compressed pubkeys either start with 0x02 or 0x03.
+		isPrivate := keyData[0] == 0x00
+		if isPrivate {
+			// Ensure the private key is valid.  It must be within the range
+			// of the order of the secp256k1 curve and not be 0.
+			keyData = keyData[1:]
+			keyNum := new(big.Int).SetBytes(keyData)
+			if keyNum.Cmp(btcec.S256().N) >= 0 || keyNum.Sign() == 0 {
+				return nil, ErrUnusableSeed
+			}
+		} else {
+			// Ensure the public key parses correctly and is actually on the
+			// secp256k1 curve.
+			_, err := btcec.ParsePubKey(keyData, btcec.S256())
+			if err != nil {
+				return nil, err
+			}
 		}
-	} else {
-		// Ensure the public key parses correctly and is actually on the
-		// secp256k1 curve.
-		_, err := btcec.ParsePubKey(keyData, btcec.S256())
-		if err != nil {
-			return nil, err
-		}
+	*/
+	// Ensure the public key parses correctly and is actually on the
+	// secp256k1 curve.
+	_, err := btcec.ParsePubKey(keyData, btcec.S256())
+	if err != nil {
+		return nil, err
 	}
 
 	return newExtendedKey(version, keyData, chainCode, parentFP, depth,
-		childNum, isPrivate), nil
+		childNum, false), nil
+}
+
+// NewKeyFromString returns a new extended key instance from a base58-encoded
+// extended key.
+func NewPrivKeyFromString(key string) (*ExtendedKey, error) {
+	// The base58-decoded extended key must consist of a serialized payload
+	// plus an additional 4 bytes for the checksum.
+	decoded := base58.Decode(key)
+
+	util.Trace(spew.Sdump(decoded))
+
+	if len(decoded) != serializedKeyLen+4 {
+		return nil, ErrInvalidKeyLen
+	}
+
+	// The serialized format is:
+	//   version (4) || depth (1) || parent fingerprint (4)) ||
+	//   child num (4) || chain code (32) || key data (33) || checksum (4)
+
+	// Split the payload and checksum up and ensure the checksum matches.
+	payload := decoded[:len(decoded)-4]
+	checkSum := decoded[len(decoded)-4:]
+	expectedCheckSum := wire.DoubleSha256(payload)[:4]
+	if !bytes.Equal(checkSum, expectedCheckSum) {
+		return nil, ErrBadChecksum
+	}
+
+	// Deserialize each of the payload fields.
+	version := payload[:4]
+	depth := uint16(payload[4:5][0])
+	parentFP := payload[5:9]
+	childNum := binary.BigEndian.Uint32(payload[9:13])
+	chainCode := payload[13:45]
+	keyData := payload[45:77]
+
+	/*
+		// The key data is a private key if it starts with 0x00.  Serialized
+		// compressed pubkeys either start with 0x02 or 0x03.
+		isPrivate := keyData[0] == 0x00
+		if isPrivate {
+			// Ensure the private key is valid.  It must be within the range
+			// of the order of the secp256k1 curve and not be 0.
+			keyData = keyData[1:]
+			keyNum := new(big.Int).SetBytes(keyData)
+			if keyNum.Cmp(btcec.S256().N) >= 0 || keyNum.Sign() == 0 {
+				return nil, ErrUnusableSeed
+			}
+		} else {
+			// Ensure the public key parses correctly and is actually on the
+			// secp256k1 curve.
+			_, err := btcec.ParsePubKey(keyData, btcec.S256())
+			if err != nil {
+				return nil, err
+			}
+		}
+	*/
+
+	// Ensure the private key is valid.  It must be within the range
+	// of the order of the secp256k1 curve and not be 0.
+	keyNum := new(big.Int).SetBytes(keyData)
+	if keyNum.Cmp(btcec.S256().N) >= 0 || keyNum.Sign() == 0 {
+		return nil, ErrUnusableSeed
+	}
+
+	return newExtendedKey(version, keyData, chainCode, parentFP, depth,
+		childNum, true), nil
 }
 
 // GenerateSeed returns a cryptographically secure random seed that can be used

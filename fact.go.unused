@@ -12,10 +12,6 @@ import (
 	"github.com/davecgh/go-spew/spew"
 )
 
-const utilRCDHashSize = 32
-
-type utilRCDHash [utilRCDHashSize]byte // this is out factoid address
-
 // PublicKey is an ecdsa.PublicKey with additional functions to
 // serialize in uncompressed, compressed, and hybrid formats.
 // type PublicKey ecdsa.PublicKey

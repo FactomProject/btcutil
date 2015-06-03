@@ -5,14 +5,14 @@
 package btcutil
 
 import (
-	"hash"
-
-	"golang.org/x/crypto/ripemd160"
-
-	"github.com/FactomProject/fastsha256"
+	//	"hash"
+	//	"golang.org/x/crypto/ripemd160"
+	//	"github.com/FactomProject/fastsha256"
 
 	"github.com/FactomProject/FactomCode/util"
 )
+
+/*
 
 // Calculate the hash of hasher over buf.
 func calcHash(buf []byte, hasher hash.Hash) []byte {
@@ -24,4 +24,12 @@ func calcHash(buf []byte, hasher hash.Hash) []byte {
 func Hash160(buf []byte) []byte {
 	util.Trace()
 	return calcHash(calcHash(buf, fastsha256.New()), ripemd160.New())
+}
+*/
+
+// Hash160 calculates the hash ripemd160(sha256(b)).
+func Hash160(buf []byte) []byte {
+	util.Trace()
+	//	return calcHash(calcHash(buf, fastsha256.New()), ripemd160.New())
+	return buf
 }
