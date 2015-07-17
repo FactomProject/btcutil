@@ -12,6 +12,8 @@ import (
 	"github.com/FactomProject/FactomCode/util"
 )
 
+var _ = util.Trace
+
 /*
 
 // Calculate the hash of hasher over buf.
@@ -22,14 +24,14 @@ func calcHash(buf []byte, hasher hash.Hash) []byte {
 
 // Hash160 calculates the hash ripemd160(sha256(b)).
 func Hash160(buf []byte) []byte {
-	util.Trace()
+	//util.Trace()
 	return calcHash(calcHash(buf, fastsha256.New()), ripemd160.New())
 }
 */
 
 // Hash160 calculates the hash ripemd160(sha256(b)).
 func Hash160(buf []byte) []byte {
-	util.Trace()
+	//util.Trace()
 	//	return calcHash(calcHash(buf, fastsha256.New()), ripemd160.New())
 	return buf
 }

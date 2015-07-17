@@ -12,6 +12,8 @@ import (
 	"github.com/davecgh/go-spew/spew"
 )
 
+var _ = util.Trace
+
 // PublicKey is an ecdsa.PublicKey with additional functions to
 // serialize in uncompressed, compressed, and hybrid formats.
 // type PublicKey ecdsa.PublicKey
@@ -32,8 +34,8 @@ func ParsePubKey(pubKeyStr []byte) (key *btcec.PublicKey, err error, rcdh *utilR
 
 	copy(newrcd[:], pubKeyStr)
 
-	util.Trace("parsePubKey (pubkey): " + spew.Sdump(pubkey))
-	util.Trace("parsePubKey (newrcd): " + spew.Sdump(newrcd))
+	//util.Trace("parsePubKey (pubkey): " + spew.Sdump(pubkey))
+	//util.Trace("parsePubKey (newrcd): " + spew.Sdump(newrcd))
 
 	// use the RCD hash as the pubkey off the Bitcoin curve for temporary wallet integration
 	fakebtc := []byte{0x2}
@@ -54,7 +56,7 @@ func ParsePubKey(pubKeyStr []byte) (key *btcec.PublicKey, err error, rcdh *utilR
 // SerializeCompressed serializes a public key in a 33-byte compressed format.
 // func (p *btcec.PublicKey) SerializePK() []byte {
 func notneeded_SerializePK() []byte {
-	util.Trace()
+	//util.Trace()
 
 	/*
 		b := make([]byte, 0, 32)
@@ -65,16 +67,16 @@ func notneeded_SerializePK() []byte {
 			b = append(b, format)
 	*/
 
-	util.Trace()
+	//util.Trace()
 	/*
 		px := p.X.Bytes()
 
 		//	return paddedAppend(32, b, p.X.Bytes())
 
-		util.Trace()
+		//util.Trace()
 		ret_val := paddedAppend(32, b, px)
 
-		util.Trace()
+		//util.Trace()
 	*/
 	ret_val := make([]byte, utilRCDHashSize)
 

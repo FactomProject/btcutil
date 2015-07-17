@@ -19,6 +19,8 @@ import (
 	"github.com/davecgh/go-spew/spew"
 )
 
+var _ = util.Trace
+
 // AddressScriptHash is an Address for a pay-to-script-hash (P2SH)
 // transaction.
 type AddressScriptHash struct {
@@ -63,7 +65,7 @@ func newAddressScriptHashFromHash(scriptHash []byte, netID byte) (*AddressScript
 // EncodeAddress returns the string encoding of a pay-to-script-hash
 // address.  Part of the Address interface.
 func (a *AddressScriptHash) EncodeAddress() string {
-	util.Trace()
+	//util.Trace()
 	panic(errors.New("ScriptHash is not supported"))
 
 	return encodeAddress(a.hash[:], a.netID)
@@ -98,7 +100,7 @@ func (a *AddressScriptHash) String() string {
 // when an array is more appropiate than a slice (for example, when used as map
 // keys).
 func (a *AddressScriptHash) Hash160() *[ripemd160.Size]byte {
-	util.Trace(spew.Sdump(a))
+	//util.Trace(spew.Sdump(a))
 	panic(errors.New("ScriptHash is not supported"))
 
 	return &a.hash
@@ -169,7 +171,7 @@ func (a *AddressPubKey) serialize() []byte {
 //
 // Part of the Address interface.
 func (a *AddressPubKey) EncodeAddress() string {
-	util.Trace()
+	//util.Trace()
 	panic(errors.New("plain PubKey format is not supported"))
 
 	return encodeAddress(Hash160(a.serialize()), a.pubKeyHashID)
@@ -236,8 +238,8 @@ func old_encodeAddress(hash160 []byte, netID byte) string {
 // When the address does not encode the network, such as in the case of a raw
 // public key, the address will be associated with the passed defaultNet.
 func old_DecodeAddress(addr string, defaultNet *chaincfg.Params) (Address, error) {
-	util.Trace("DecodeAddress(" + addr + ")")
-	util.Trace(fmt.Sprintf("len= %d", len(addr)))
+	//util.Trace("DecodeAddress(" + addr + ")")
+	//util.Trace(fmt.Sprintf("len= %d", len(addr)))
 
 	// Serialized public keys are either 65 bytes (130 hex chars) if
 	// uncompressed/hybrid or 33 bytes (66 hex chars) if compressed.

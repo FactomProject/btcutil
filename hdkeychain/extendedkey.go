@@ -28,6 +28,8 @@ import (
 	"github.com/davecgh/go-spew/spew"
 )
 
+var _ = util.Trace
+
 const (
 	// RecommendedSeedLen is the recommended length in bytes for a seed
 	// to a master node.
@@ -480,7 +482,7 @@ func NewPubKeyFromString(key string) (*ExtendedKey, error) {
 	// plus an additional 4 bytes for the checksum.
 	decoded := base58.Decode(key)
 
-	util.Trace(spew.Sdump(decoded))
+	//util.Trace(spew.Sdump(decoded))
 
 	if len(decoded) != serializedKeyLen+4 {
 		return nil, ErrInvalidKeyLen
@@ -545,7 +547,7 @@ func NewPrivKeyFromString(key string) (*ExtendedKey, error) {
 	// plus an additional 4 bytes for the checksum.
 	decoded := base58.Decode(key)
 
-	util.Trace(spew.Sdump(decoded))
+	//util.Trace(spew.Sdump(decoded))
 
 	if len(decoded) != serializedKeyLen+4 {
 		return nil, ErrInvalidKeyLen

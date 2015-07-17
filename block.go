@@ -15,6 +15,8 @@ import (
 	"github.com/davecgh/go-spew/spew"
 )
 
+var _ = util.Trace
+
 // OutOfRangeError describes an error due to accessing an element that is out
 // of range.
 type OutOfRangeError string
@@ -174,14 +176,14 @@ func (b *Block) TxSha(txNum int) (*wire.ShaHash, error) {
 // It is used to allow fast indexing into transactions within the raw byte
 // stream.
 func (b *Block) TxLoc() ([]wire.TxLoc, error) {
-	util.Trace()
+	//util.Trace()
 	fmt.Println("TxLoc= ", spew.Sdump(b))
 
 	rawMsg, err := b.Bytes()
 	if err != nil {
 		return nil, err
 	}
-	util.Trace()
+	//util.Trace()
 	rbuf := bytes.NewBuffer(rawMsg)
 
 	var mblock wire.MsgBlock
@@ -189,7 +191,7 @@ func (b *Block) TxLoc() ([]wire.TxLoc, error) {
 	if err != nil {
 		return nil, err
 	}
-	util.Trace()
+	//util.Trace()
 	return txLocs, err
 }
 
@@ -245,7 +247,7 @@ func NewBlockFromReader(r io.Reader) (*Block, error) {
 // NewBlockFromBlockAndBytes returns a new instance of a bitcoin block given
 // an underlying wire.MsgBlock and the serialized bytes for it.  See Block.
 func NewBlockFromBlockAndBytes(msgBlock *wire.MsgBlock, serializedBlock []byte) *Block {
-	util.Trace()
+	//util.Trace()
 	return &Block{
 		msgBlock:        msgBlock,
 		serializedBlock: serializedBlock,

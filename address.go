@@ -19,6 +19,8 @@ import (
 	"github.com/davecgh/go-spew/spew"
 )
 
+var _ = util.Trace
+
 const utilRCDHashSize = 32
 
 const disableSpew = true
@@ -88,7 +90,7 @@ type AddressPubKeyHash struct {
 // bytes.
 func NewAddressPubKeyHash(pkHash []byte, net *chaincfg.Params) (*AddressPubKeyHash, error) {
 	if !disableSpew {
-		util.Trace(spew.Sdump(pkHash))
+		//util.Trace(spew.Sdump(pkHash))
 	}
 	return newAddressPubKeyHash(pkHash, net.PubKeyHashAddrID)
 }
@@ -100,7 +102,7 @@ func NewAddressPubKeyHash(pkHash []byte, net *chaincfg.Params) (*AddressPubKeyHa
 // known.
 func newAddressPubKeyHash(pkHash []byte, netID byte) (*AddressPubKeyHash, error) {
 	if !disableSpew {
-		util.Trace(spew.Sdump(pkHash))
+		//util.Trace(spew.Sdump(pkHash))
 	}
 	// Check for a valid pubkey hash length.
 	//	if len(pkHash) != ripemd160.Size {
@@ -117,11 +119,11 @@ func newAddressPubKeyHash(pkHash []byte, netID byte) (*AddressPubKeyHash, error)
 // address.  Part of the Address interface.
 func (a *AddressPubKeyHash) EncodeAddress() string {
 	if !disableSpew {
-		util.Trace(spew.Sdump(a.hash[:]))
+		//util.Trace(spew.Sdump(a.hash[:]))
 	}
 
 	ret_string := encodeAddress(a.hash[:], a.netID)
-	util.Trace(ret_string)
+	//util.Trace(ret_string)
 
 	return ret_string
 }
@@ -131,7 +133,7 @@ func (a *AddressPubKeyHash) EncodeAddress() string {
 func (a *AddressPubKeyHash) ScriptAddress() []byte {
 	ret_bytes := a.hash[:]
 	if !disableSpew {
-		util.Trace(spew.Sdump(ret_bytes))
+		//util.Trace(spew.Sdump(ret_bytes))
 	}
 
 	return ret_bytes
@@ -148,7 +150,7 @@ func (a *AddressPubKeyHash) IsForNet(net *chaincfg.Params) bool {
 // be used as a fmt.Stringer.
 func (a *AddressPubKeyHash) String() string {
 	ret_string := a.EncodeAddress()
-	util.Trace(ret_string)
+	//util.Trace(ret_string)
 
 	return ret_string
 }
@@ -159,7 +161,7 @@ func (a *AddressPubKeyHash) String() string {
 // func (a *AddressPubKeyHash) Hash160() *[ripemd160.Size]byte {
 func (a *AddressPubKeyHash) Hash160() *[utilRCDHashSize]byte {
 	if !disableSpew {
-		util.Trace(spew.Sdump(a))
+		//util.Trace(spew.Sdump(a))
 	}
 
 	return &a.hash
@@ -229,8 +231,8 @@ func EncodeAddr(hash []byte) string {
 // public key, the address will be associated with the passed defaultNet.
 // func DecodeAddress(addr string, defaultNet *chaincfg.Params) (Address, error) {
 func old_DecodeAddr(addr string) (Address, error) {
-	util.Trace("DecodeAddress(" + addr + ")")
-	util.Trace(fmt.Sprintf("len= %d", len(addr)))
+	//util.Trace("DecodeAddress(" + addr + ")")
+	//util.Trace(fmt.Sprintf("len= %d", len(addr)))
 
 	/*
 		// Serialized public keys are either 65 bytes (130 hex chars) if
@@ -240,10 +242,10 @@ func old_DecodeAddr(addr string) (Address, error) {
 			serializedPubKey, err := hex.DecodeString(addr)
 
 			if err != nil {
-				util.Trace(fmt.Sprintf("ERROR: %v", err))
+				//util.Trace(fmt.Sprintf("ERROR: %v", err))
 				return nil, err
 			}
-			util.Trace()
+			//util.Trace()
 			return NewAddressPubKey(serializedPubKey, &chaincfg.MainNetParams)
 		}
 
@@ -255,7 +257,7 @@ func old_DecodeAddr(addr string) (Address, error) {
 	if 52 != len(addr) {
 		panic(errors.New("Factoid address not 52 characters long!"))
 	}
-	util.Trace()
+	//util.Trace()
 
 	// Switch on decoded length to determine the type.
 	//	decoded, netID, err := base58.CheckDecode(addr)
@@ -268,7 +270,7 @@ func old_DecodeAddr(addr string) (Address, error) {
 		return nil, errors.New("decoded address is of unknown format")
 	}
 
-	//	util.Trace("decoded= " + spew.Sdump(decoded))
+	//	//util.Trace("decoded= " + spew.Sdump(decoded))
 
 	return NewAddressPubKey(decoded, &chaincfg.MainNetParams)
 
@@ -301,13 +303,13 @@ func old_DecodeAddr(addr string) (Address, error) {
 // When the address does not encode the network, such as in the case of a raw
 // public key, the address will be associated with the passed defaultNet.
 func DecodeAddress(addr string, defaultNet *chaincfg.Params) (Address, error) {
-	util.Trace("DecodeAddress(" + addr + ")")
-	util.Trace(fmt.Sprintf("len= %d", len(addr)))
+	//util.Trace("DecodeAddress(" + addr + ")")
+	//util.Trace(fmt.Sprintf("len= %d", len(addr)))
 
 	if 52 != len(addr) {
 		panic(errors.New("Factoid address not 52 characters long!"))
 	}
-	util.Trace()
+	//util.Trace()
 
 	/*
 		// Serialized public keys are either 65 bytes (130 hex chars) if
@@ -331,7 +333,7 @@ func DecodeAddress(addr string, defaultNet *chaincfg.Params) (Address, error) {
 		return nil, errors.New("decoded address is of unknown format")
 	}
 	if !disableSpew {
-		util.Trace("decoded= " + spew.Sdump(decoded))
+		//util.Trace("decoded= " + spew.Sdump(decoded))
 	}
 
 	/*

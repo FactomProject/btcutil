@@ -16,6 +16,8 @@ import (
 	"github.com/FactomProject/FactomCode/util"
 )
 
+var _ = util.Trace
+
 // ErrMalformedPrivateKey describes an error where a WIF-encoded private
 // key cannot be decoded due to being improperly formatted.  This may occur
 // if the byte length is incorrect or an unexpected magic number was
@@ -164,7 +166,7 @@ func (w *WIF) SerializePubKey() []byte {
 // If the length of the source is smaller than the passed size, leading zero
 // bytes are appended to the dst slice before appending src.
 func paddedAppend(size uint, dst, src []byte) []byte {
-	util.Trace()
+	//util.Trace()
 
 	for i := 0; i < int(size)-len(src); i++ {
 		dst = append(dst, 0)
