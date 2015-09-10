@@ -43,7 +43,6 @@ func CheckEncode(input []byte, version byte) string {
 	return Encode(b)
 }
 
-/*
 // CheckDecode decodes a string that was encoded with CheckEncode and verifies the checksum.
 func CheckDecode(input string) (result []byte, version byte, err error) {
 	decoded := Decode(input)
@@ -60,8 +59,8 @@ func CheckDecode(input string) (result []byte, version byte, err error) {
 	result = append(result, payload...)
 	return
 }
-*/
 
+/*
 // CheckDecode decodes a string that was encoded with CheckEncode and verifies the checksum.
 func CheckDecode(input string) (result []byte, v1 byte, v2 byte, err error) {
 	decoded := Decode(input)
@@ -81,3 +80,4 @@ func CheckDecode(input string) (result []byte, v1 byte, v2 byte, err error) {
 	result = append(result, payload...)
 	return
 }
+*/
