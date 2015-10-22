@@ -32,7 +32,10 @@ func CheckEncode(input []byte, version byte) string {
 
 	b1 = 0x5F
 	b2 = 0xB1
+	return CheckEncodeWithVersionBytes(input, b1, b2)
+}
 
+func CheckEncodeWithVersionBytes(input []byte, b1, b2 byte) string {
 	b := make([]byte, 0, 2+len(input)+4)
 	b = append(b, b1)
 	b = append(b, b2)
