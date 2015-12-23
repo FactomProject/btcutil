@@ -32,7 +32,10 @@ func CheckEncode(input []byte, version byte) string {
 
 	b1 = 0x5F
 	b2 = 0xB1
+	return CheckEncodeWithVersionBytes(input, b1, b2)
+}
 
+func CheckEncodeWithVersionBytes(input []byte, b1, b2 byte) string {
 	b := make([]byte, 0, 2+len(input)+4)
 	b = append(b, b1)
 	b = append(b, b2)
@@ -44,7 +47,7 @@ func CheckEncode(input []byte, version byte) string {
 }
 
 // CheckDecode decodes a string that was encoded with CheckEncode and verifies the checksum.
-func CheckDecode(input string) (result []byte, version byte, err error) {
+func CheckDecodeWithOneVersionByte(input string) (result []byte, version byte, err error) {
 	decoded := Decode(input)
 	if len(decoded) < 5 {
 		return nil, 0, ErrInvalidFormat
@@ -60,9 +63,8 @@ func CheckDecode(input string) (result []byte, version byte, err error) {
 	return
 }
 
-/*
 // CheckDecode decodes a string that was encoded with CheckEncode and verifies the checksum.
-func CheckDecode(input string) (result []byte, v1 byte, v2 byte, err error) {
+func CheckDecodeWithTwoVersionBytes(input string) (result []byte, v1 byte, v2 byte, err error) {
 	decoded := Decode(input)
 	if len(decoded) < 6 {
 		return nil, 0, 0, ErrInvalidFormat
@@ -80,4 +82,3 @@ func CheckDecode(input string) (result []byte, v1 byte, v2 byte, err error) {
 	result = append(result, payload...)
 	return
 }
-*/
