@@ -17,7 +17,7 @@ import (
 	"github.com/FactomProject/btcd/wire"
 	"github.com/FactomProject/btcutil"
 
-	"github.com/davecgh/go-spew/spew"
+	"github.com/FactomProject/go-spew/spew"
 )
 
 // invalidNet is an invalid bitcoin network.
