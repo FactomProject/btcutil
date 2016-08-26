@@ -2,7 +2,7 @@
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
-package btcutil
+package certs
 
 import (
 	"bytes"
@@ -77,7 +77,7 @@ func NewTLSCertPair(organization string, validUntil time.Time, extraHosts []stri
 		"localhost": true,
 	}
 
-	addrs, err := interfaceAddrs()
+	addrs, err := net.InterfaceAddrs()
 	if err != nil {
 		return nil, nil, err
 	}
