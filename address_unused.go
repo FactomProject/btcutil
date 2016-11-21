@@ -11,7 +11,7 @@ import (
 
 	"golang.org/x/crypto/ripemd160"
 
-	"github.com/FactomProject/btcd/btcec"
+	"github.com/btcsuitereleases/btcd/btcec"
 	"github.com/FactomProject/btcd/chaincfg"
 	//	"github.com/FactomProject/btcutil/base58"
 

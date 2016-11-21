@@ -8,7 +8,7 @@ import (
 	"bytes"
 	"errors"
 
-	"github.com/FactomProject/btcd/btcec"
+	"github.com/btcsuitereleases/btcd/btcec"
 	"github.com/FactomProject/btcd/chaincfg"
 	"github.com/FactomProject/btcd/wire"
 	"github.com/FactomProject/btcutil/base58"
