@@ -1,0 +1,22 @@
+package: github.com/FactomProject/btcutil
+import:
+- package: github.com/FactomProject/FactomCode
+  version: develop
+  subpackages:
+  - util
+- package: github.com/FactomProject/btcd
+  version: ~1.0.0
+  subpackages:
+  - chaincfg
+  - wire
+- package: github.com/FactomProject/go-spew
+  subpackages:
+  - spew
+- package: github.com/btcsuitereleases/btcd
+  subpackages:
+  - btcec
+- package: golang.org/x/crypto
+  subpackages:
+  - ripemd160
+testImport:
+- package: github.com/FactomProject/fastsha256
