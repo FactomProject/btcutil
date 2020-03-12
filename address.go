@@ -9,14 +9,10 @@ import (
 	"errors"
 	"fmt"
 
-	//	"golang.org/x/crypto/ripemd160"
-
-	"github.com/FactomProject/btcd/btcec"
 	"github.com/FactomProject/btcd/chaincfg"
 	"github.com/FactomProject/btcutil/base58"
-
+	"github.com/FactomProject/btcutil/btcec"
 	"github.com/FactomProject/FactomCode/util"
-	"github.com/FactomProject/go-spew/spew"
 )
 
 var _ = util.Trace
@@ -223,78 +219,6 @@ func EncodeAddr(hash []byte) string {
 	return human_addr
 }
 
-// DecodeAddress decodes the string encoding of an address and returns
-// the Address if addr is a valid encoding for a known address type.
-//
-// The bitcoin network the address is associated with is extracted if possible.
-// When the address does not encode the network, such as in the case of a raw
-// public key, the address will be associated with the passed defaultNet.
-// func DecodeAddress(addr string, defaultNet *chaincfg.Params) (Address, error) {
-func old_DecodeAddr(addr string) (Address, error) {
-	//util.Trace("DecodeAddress(" + addr + ")")
-	//util.Trace(fmt.Sprintf("len= %d", len(addr)))
-
-	/*
-		// Serialized public keys are either 65 bytes (130 hex chars) if
-		// uncompressed/hybrid or 33 bytes (66 hex chars) if compressed.
-		//	if len(addr) == 130 || len(addr) == 66 {
-		if 52 == len(addr) {
-			serializedPubKey, err := hex.DecodeString(addr)
-
-			if err != nil {
-				//util.Trace(fmt.Sprintf("ERROR: %v", err))
-				return nil, err
-			}
-			//util.Trace()
-			return NewAddressPubKey(serializedPubKey, &chaincfg.MainNetParams)
-		}
-
-		return nil, errors.New("decoded address is of unknown format")
-
-		panic(12300)
-	*/
-
-	if 52 != len(addr) {
-		panic(errors.New("Factoid address not 52 characters long!"))
-	}
-	//util.Trace()
-
-	// Switch on decoded length to determine the type.
-	//	decoded, netID, err := base58.CheckDecode(addr)
-	decoded, _, _, err := base58.CheckDecode(addr)
-	if err != nil {
-		if err == base58.ErrChecksum {
-			return nil, ErrChecksumMismatch
-		}
-		fmt.Println(err)
-		return nil, errors.New("decoded address is of unknown format")
-	}
-
-	//	//util.Trace("decoded= " + spew.Sdump(decoded))
-
-	return NewAddressPubKey(decoded, &chaincfg.MainNetParams)
-
-	/*
-		switch len(decoded) {
-		case ripemd160.Size: // P2PKH or P2SH
-			isP2PKH := chaincfg.IsPubKeyHashAddrID(netID)
-			isP2SH := chaincfg.IsScriptHashAddrID(netID)
-			switch hash160 := decoded; {
-			case isP2PKH && isP2SH:
-				return nil, ErrAddressCollision
-							case isP2PKH:
-								return newAddressPubKeyHash(hash160, netID)
-					case isP2SH:
-						return newAddressScriptHashFromHash(hash160, netID)
-			default:
-				return nil, ErrUnknownAddressType
-			}
-
-		default:
-			return nil, errors.New("decoded address is of unknown size")
-		}
-	*/
-}
 
 // DecodeAddress decodes the string encoding of an address and returns
 // the Address if addr is a valid encoding for a known address type.

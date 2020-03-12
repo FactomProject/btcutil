@@ -18,14 +18,13 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/FactomProject/btcd/btcec"
 	"github.com/FactomProject/btcd/chaincfg"
 	"github.com/FactomProject/btcd/wire"
 	"github.com/FactomProject/btcutil"
 	"github.com/FactomProject/btcutil/base58"
+	"github.com/FactomProject/btcutil/btcec"
 
 	"github.com/FactomProject/FactomCode/util"
-	"github.com/FactomProject/go-spew/spew"
 )
 
 var _ = util.Trace

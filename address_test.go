@@ -16,8 +16,6 @@ import (
 	"github.com/FactomProject/btcd/chaincfg"
 	"github.com/FactomProject/btcd/wire"
 	"github.com/FactomProject/btcutil"
-
-	"github.com/FactomProject/go-spew/spew"
 )
 
 // invalidNet is an invalid bitcoin network.
@@ -42,7 +40,7 @@ func TestTheBasics(t *testing.T) {
 		return
 	}
 
-	t.Logf(spew.Sdump(decoded.ScriptAddress()))
+	t.Logf("%x", decoded.ScriptAddress())
 
 	t.Logf(address_string + " decoding...")
 	decoded, err = btcutil.DecodeAddress(address_string, &chaincfg.MainNetParams)
@@ -51,7 +49,7 @@ func TestTheBasics(t *testing.T) {
 		return
 	}
 
-	t.Logf(spew.Sdump(decoded.ScriptAddress()))
+	t.Logf("%x", decoded.ScriptAddress())
 }
 
 func testAddresses(t *testing.T) {

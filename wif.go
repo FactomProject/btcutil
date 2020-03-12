@@ -8,12 +8,11 @@ import (
 	"bytes"
 	"errors"
 
-	"github.com/FactomProject/btcd/btcec"
+	"github.com/FactomProject/FactomCode/util"
 	"github.com/FactomProject/btcd/chaincfg"
 	"github.com/FactomProject/btcd/wire"
 	"github.com/FactomProject/btcutil/base58"
-
-	"github.com/FactomProject/FactomCode/util"
+	"github.com/FactomProject/btcutil/btcec"
 )
 
 var _ = util.Trace

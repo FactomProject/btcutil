@@ -63,6 +63,10 @@ func CheckDecodeWithOneVersionByte(input string) (result []byte, version byte, e
 	return
 }
 
+func CheckDecode(input string) (result []byte, v1 byte, v2 byte, err error) {
+	return CheckDecodeWithTwoVersionBytes(input)
+}
+
 // CheckDecode decodes a string that was encoded with CheckEncode and verifies the checksum.
 func CheckDecodeWithTwoVersionBytes(input string) (result []byte, v1 byte, v2 byte, err error) {
 	decoded := Decode(input)

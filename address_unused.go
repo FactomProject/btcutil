@@ -7,16 +7,13 @@ package btcutil
 import (
 	"encoding/hex"
 	"errors"
+
 	//	"fmt"
 
-	"golang.org/x/crypto/ripemd160"
-
-	"github.com/FactomProject/btcd/btcec"
-	"github.com/FactomProject/btcd/chaincfg"
-	//	"github.com/FactomProject/btcutil/base58"
-
 	"github.com/FactomProject/FactomCode/util"
-	"github.com/FactomProject/go-spew/spew"
+	"github.com/FactomProject/btcd/chaincfg"
+	"github.com/FactomProject/btcutil/btcec"
+	"golang.org/x/crypto/ripemd160"
 )
 
 var _ = util.Trace
